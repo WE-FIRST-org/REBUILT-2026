@@ -4,10 +4,19 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,54 +30,74 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
-  private XboxController driverController;
+
+  private PS4Controller driverController;
+  private PS4Controller operatorController;
+
   private Drivetrain drivetrain;
+
+  // Shooter 
+  private SparkFlex shooterMotorLeft;
+  private SparkFlex shooterMotorRight;
+
+  // Intake + Indexer 
+  private WPI_VictorSPX intakeMotor;
+  private WPI_VictorSPX indexerMotor;
+
   private double throttle, steer;
   private double speedModifer = 1;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  private static final int kShooterLeftCanId = 13;
+  private static final int kShooterRightCanId = 14;
+  // Set these to actual CAN IDs
+  private static final int kIntakeCanId = 20;   // CHANGE ME
+  private static final int kIndexerCanId = 21;  // CHANGE ME
+
+  // Motor outputs
+  private static final double kIntakePercentOutput = 0.7;
+  private static final double kIndexerPercentOutput = 0.7;
+
+  // Shooter stick shaping
+  private static final double kShooterDeadband = 0.05;
+
+  /** This function is run when the robot is first started up and should be used for any initialization code. */
   public Robot() {
 
-    driverController = new XboxController(0);
+    driverController = new PS4Controller(0);
+    operatorController = new PS4Controller(1);
+
     drivetrain = new Drivetrain();
+
+    shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
+    shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
+
+    SparkFlexConfig rightCfg = new SparkFlexConfig();
+    rightCfg.follow(shooterMotorLeft, true); // set false to not invert follower if needed
+    shooterMotorRight.configure(rightCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    intakeMotor = new WPI_VictorSPX(kIntakeCanId);
+    indexerMotor = new WPI_VictorSPX(kIndexerCanId);
+
+    intakeMotor.setNeutralMode(NeutralMode.Coast);
+    indexerMotor.setNeutralMode(NeutralMode.Coast);
+
+    intakeMotor.set( 0.0);
+    indexerMotor.set( 0.0);
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic() {}
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
-   * chooser code above as well.
-   */
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
   }
 
-  /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
@@ -89,52 +118,73 @@ public class Robot extends TimedRobot {
    * @param input the joystick input to deadband
    * @return the deadbanded input
    */
-  private double joystickDeadband(double input){
-    if(input * input < 0.001){
+  private double joystickDeadband(double input) {
+    if (input * input < 0.001) {
       return 0.0;
     }
     return input;
   }
 
-  /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    drivetrain.setMode(NeutralMode.Brake); 
+    drivetrain.setMode(NeutralMode.Brake);
   }
 
-  /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    // ---- Driver drive control ----
     double curLeftYVal = driverController.getLeftY();
     double curRightXVal = driverController.getRightX();
-    throttle = speedModifer * joystickDeadband(-(curLeftYVal)* Math.abs(curLeftYVal)); 
+    throttle = speedModifer * joystickDeadband(-(curLeftYVal) * Math.abs(curLeftYVal));
     steer = speedModifer * joystickDeadband(curRightXVal * Math.abs(curRightXVal));
-    drivetrain.drive(throttle,steer);
+    drivetrain.drive(throttle, steer);
+
+
+    double rightY = operatorController.getRightY();
+    double shooterCmd = -rightY;
+
+    shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
+    shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
+
+    shooterMotorLeft.set(shooterCmd);
+
+    // Operator Controller: intake while LB held
+    if (operatorController.getL1Button()) { 
+      intakeMotor.set( kIntakePercentOutput);
+    } else {
+      intakeMotor.set( 0.0);
+    }
+
+    // Operator Controller: indexer while RB held 
+    if (operatorController.getR1Button()) {
+      indexerMotor.set( kIndexerPercentOutput);
+    } else {
+      indexerMotor.set( 0.0);
+    }
   }
 
-  /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
     drivetrain.setMode(NeutralMode.Coast);
+
+    // Safety: stop motors when disabled
+    shooterMotorLeft.set(0.0);
+    intakeMotor.set(0.0);
+    indexerMotor.set( 0.0);
   }
 
-  /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {}
 
-  /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {}
 
-  /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
 
-  /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {}
 
-  /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
 }
