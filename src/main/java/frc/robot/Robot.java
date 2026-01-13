@@ -31,6 +31,8 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  boolean inversed;
+
   private PS4Controller driverController;
   private PS4Controller operatorController;
 
@@ -49,18 +51,18 @@ public class Robot extends TimedRobot {
   private double throttle, steer;
   private double speedModifer = 1;
 
-  private static final int kShooterLeftCanId = 13;
-  private static final int kShooterRightCanId = 14;
+  //private static final int kShooterLeftCanId = 13;
+  //private static final int kShooterRightCanId = 14;
   // Set these to actual CAN IDs
-  private static final int kIntakeCanId = 20;   // CHANGE ME
-  private static final int kIndexerCanId = 21;  // CHANGE ME
+  //private static final int kIntakeCanId = 9;   // CHANGE ME
+  //private static final int kIndexerCanId = 21;  // CHANGE ME
 
   // Motor outputs
   private static final double kIntakePercentOutput = 0.7;
-  private static final double kIndexerPercentOutput = 0.7;
+  //private static final double kIndexerPercentOutput = 0.7;
 
   // Shooter stick shaping
-  private static final double kShooterDeadband = 0.05;
+  //private static final double kShooterDeadband = 0.05;
 
   /** This function is run when the robot is first started up and should be used for any initialization code. */
   public Robot() {
@@ -132,15 +134,28 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     drivetrain.setMode(NeutralMode.Brake);
+    inversed = false;
   }
 
   @Override
   public void teleopPeriodic() {
-    // ---- DRIVER DRIVE CONTROL ----
+    //---- DRIVER DRIVE CONTROL ----
     double curLeftYVal = driverController.getLeftY();
     double curRightXVal = driverController.getRightX();
     throttle = speedModifer * joystickDeadband(-(curLeftYVal) * Math.abs(curLeftYVal));
     steer = speedModifer * joystickDeadband(curRightXVal * Math.abs(curRightXVal));
+
+    // throttle = 0.4 * joystickDeadband(-(driverController.getLeftY())*Math.abs(driverController.getLeftY()));
+    // steer = 0.20 * joystickDeadband(driverController.getRightX() * Math.abs(driverController.getRightX()));
+    // if(inversed){
+    //   throttle *= -1;
+    //   steer *= -1;
+    // }
+    // if (driverController.getLeftBumperButtonPressed()){
+    //   inversed = !inversed;
+    // }
+
+
     drivetrain.drive(throttle, steer);
 
 

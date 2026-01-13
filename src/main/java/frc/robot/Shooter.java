@@ -28,6 +28,7 @@ public class Shooter {
         SparkMaxConfig leftConfig = new SparkMaxConfig();
         leftConfig.smartCurrentLimit(80);
         m_shooterLEFT.configure(leftConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        m_shooterLEFT.set(0);
 
         //RIGHT MOTOR CONFIG
         // Invert ONE side so wheels spin opposite directions
@@ -36,6 +37,7 @@ public class Shooter {
         //rightConfig.inverted(true);
         rightConfig.follow(m_shooterLEFT, true); // set false to not invert follower if needed
         m_shooterRIGHT.configure(rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        m_shooterRIGHT.set(0);
 
         // INDEXER MOTOR (BAG)
         m_indexer = new WPI_VictorSPX(kINDEXER);
