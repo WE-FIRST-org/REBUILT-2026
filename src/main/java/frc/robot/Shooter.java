@@ -1,14 +1,10 @@
 package frc.robot;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class Shooter {
     public static final int kGUN_LEFT = 13;
@@ -17,16 +13,21 @@ public class Shooter {
     private final SparkMax m_shooterLEFT;
     private final SparkMax m_shooterRIGHT;
 
-    private SparkMaxConfig rightConfig = new SparkMaxConfig();
-
     public Shooter() {
         m_shooterLEFT = new SparkMax(kGUN_LEFT, MotorType.kBrushless);
         m_shooterRIGHT = new SparkMax(kGUN_RIGHT, MotorType.kBrushless);
 
+        //LEFT MOTOR CONFIG
+        SparkMaxConfig leftConfig = new SparkMaxConfig();
+        leftConfig.smartCurrentLimit(80);
+        m_shooterLEFT.configure(leftConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        //RIGHT MOTOR CONFIG
         // Invert ONE side so wheels spin opposite directions
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+        rightConfig.smartCurrentLimit(80);
         rightConfig.inverted(true);
         m_shooterRIGHT.configure(rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-     
     }
 
     //ON Shooter 
@@ -41,10 +42,10 @@ public class Shooter {
         m_shooterRIGHT.set(0.0);
     }
 
-    public void setSpeed(double speed) {
-        m_shooterLEFT.set(speed);
-        m_shooterRIGHT.set(-speed);
-    }
+    // public void setSpeed(double speed) {
+    //     m_shooterLEFT.set(speed);
+    //     m_shooterRIGHT.set(-speed);
+    // }
 
 }
 
