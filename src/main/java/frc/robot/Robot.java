@@ -47,11 +47,11 @@ public class Robot extends TimedRobot {
   private double throttle, steer;
   private double speedModifer = 1;
 
-  private static final int kShooterLeftCanId = 13;
-  private static final int kShooterRightCanId = 14;
+  private static final int kShooterLeftCanId = 61;
+  private static final int kShooterRightCanId = 62;
   // Set these to actual CAN IDs
-  private static final int kIntakeCanId = 20;   // CHANGE ME
-  private static final int kIndexerCanId = 21;  // CHANGE ME
+  private static final int kIntakeCanId = 9;   // CHANGE ME
+  private static final int kIndexerCanId = 5;  // CHANGE ME
 
   // Motor outputs
   private static final double kIntakePercentOutput = 0.7;

@@ -21,8 +21,8 @@ public class Drivetrain {
 
     public Drivetrain() {
         // Right Motors
-        rightMotor1 = new WPI_VictorSPX(0);
-        rightMotor2 = new WPI_VictorSPX(2);
+        rightMotor1 = new WPI_VictorSPX(2);
+        rightMotor2 = new WPI_VictorSPX(4);
         // Left Motors
         leftMotor1 = new WPI_VictorSPX(1);
         leftMotor2 = new WPI_VictorSPX(3);
