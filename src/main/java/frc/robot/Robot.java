@@ -39,12 +39,12 @@ public class Robot extends TimedRobot {
   private Intake intake;  // Intake object
 
   // Shooter 
-  private SparkFlex shooterMotorLeft;
-  private SparkFlex shooterMotorRight;
+  //private SparkFlex shooterMotorLeft;
+  //private SparkFlex shooterMotorRight;
 
   // Intake + Indexer 
-  private WPI_VictorSPX intakeMotor;
-  private WPI_VictorSPX indexerMotor;
+  //private WPI_VictorSPX intakeMotor;
+  //private WPI_VictorSPX indexerMotor;
 
   private double throttle, steer;
   private double speedModifer = 1;
@@ -72,21 +72,21 @@ public class Robot extends TimedRobot {
     shooter = new Shooter();
     intake = new Intake(20);
 
-    shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
-    shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
+    //shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
+    //shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
 
     SparkFlexConfig rightCfg = new SparkFlexConfig();
-    rightCfg.follow(shooterMotorLeft, true); // set false to not invert follower if needed
-    shooterMotorRight.configure(rightCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    //rightCfg.follow(shooterMotorLeft, true); // set false to not invert follower if needed
+    //shooterMotorRight.configure(rightCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    intakeMotor = new WPI_VictorSPX(kIntakeCanId);
-    indexerMotor = new WPI_VictorSPX(kIndexerCanId);
+    //intakeMotor = new WPI_VictorSPX(kIntakeCanId);
+    //indexerMotor = new WPI_VictorSPX(kIndexerCanId);
 
-    intakeMotor.setNeutralMode(NeutralMode.Coast);
-    indexerMotor.setNeutralMode(NeutralMode.Coast);
+    //intakeMotor.setNeutralMode(NeutralMode.Coast);
+    //indexerMotor.setNeutralMode(NeutralMode.Coast);
 
-    intakeMotor.set( 0.0);
-    indexerMotor.set( 0.0);
+    //intakeMotor.set( 0.0);
+    //indexerMotor.set( 0.0);
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -144,8 +144,8 @@ public class Robot extends TimedRobot {
     drivetrain.drive(throttle, steer);
 
 
-    double rightY = operatorController.getRightY();
-    double shooterCmd = -rightY;
+    //double rightY = operatorController.getRightY();
+    //double shooterCmd = -rightY;
 
     // shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
     // shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
@@ -184,9 +184,8 @@ public class Robot extends TimedRobot {
     drivetrain.setMode(NeutralMode.Coast);
 
     // Safety: stop motors when disabled
-    shooterMotorLeft.set(0.0);
-    intakeMotor.set(0.0);
-    indexerMotor.set( 0.0);
+    shooter.shootOff();
+    intake.stop();
   }
 
   @Override

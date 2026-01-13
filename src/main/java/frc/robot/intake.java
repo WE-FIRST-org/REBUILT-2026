@@ -8,14 +8,18 @@ public class Intake {
     private WPI_VictorSPX intakeMotor;
 
     //This runs once when you say "new Intake()"
-    public Intake(int canId) {
-        intakeMotor = new WPI_VictorSPX(canId);
+    public Intake(int kIntakeCanId) {
+        intakeMotor = new WPI_VictorSPX(kIntakeCanId);
 
         // Clear old settings 
         intakeMotor.configFactoryDefault();
 
         // Setting it to "Coast" so it doesn't jerk to a stop
         intakeMotor.setNeutralMode(NeutralMode.Coast);
+            
+        //start stopped
+        intakeMotor.set(0.0);
+
     }
 
     // Run the intake
