@@ -35,6 +35,8 @@ public class Robot extends TimedRobot {
   private PS4Controller operatorController;
 
   private Drivetrain drivetrain;
+  private Shooter shooter;
+  private Intake intake;  // Intake object
 
   // Shooter 
   private SparkFlex shooterMotorLeft;
@@ -67,6 +69,8 @@ public class Robot extends TimedRobot {
     operatorController = new PS4Controller(1);
 
     drivetrain = new Drivetrain();
+    shooter = new Shooter();
+    intake = new Intake(20);
 
     shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
     shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
@@ -132,7 +136,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    // ---- Driver drive control ----
+    // ---- DRIVER DRIVE CONTROL ----
     double curLeftYVal = driverController.getLeftY();
     double curRightXVal = driverController.getRightX();
     throttle = speedModifer * joystickDeadband(-(curLeftYVal) * Math.abs(curLeftYVal));
@@ -143,24 +147,36 @@ public class Robot extends TimedRobot {
     double rightY = operatorController.getRightY();
     double shooterCmd = -rightY;
 
-    shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
-    shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
+    // shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
+    // shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
 
-    shooterMotorLeft.set(shooterCmd);
+    // shooterMotorLeft.set(shooterCmd);
 
-    // Operator Controller: intake while LB held
+    // SHOOTER AND INDEXER CONTROL
+    if (operatorController.getR2Button()) {   
+        shooter.shootOn();   // Spins shooter and indexer together
+    } else {
+        shooter.shootOff();  // Stops shooter and indexer
+    }
+
+    // OPERATOR CONTROL: intake while LB held
     if (operatorController.getL1Button()) { 
-      intakeMotor.set( kIntakePercentOutput);
+      intake.run(kIntakePercentOutput);
     } else {
-      intakeMotor.set( 0.0);
+      intake.stop();
     }
+    // if (operatorController.getL1Button()) { 
+    //   intakeMotor.set( kIntakePercentOutput);
+    // } else {
+    //   intakeMotor.set( 0.0);
+    // }
 
-    // Operator Controller: indexer while RB held 
-    if (operatorController.getR1Button()) {
-      indexerMotor.set( kIndexerPercentOutput);
-    } else {
-      indexerMotor.set( 0.0);
-    }
+    // // Operator Controller: indexer while RB held 
+    // if (operatorController.getR1Button()) {
+    //   indexerMotor.set( kIndexerPercentOutput);
+    // } else {
+    //   indexerMotor.set( 0.0);
+    // }
   }
 
   @Override

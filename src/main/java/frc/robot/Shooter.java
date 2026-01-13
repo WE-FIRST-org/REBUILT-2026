@@ -6,12 +6,19 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
 public class Shooter {
-    public static final int kGUN_LEFT = 13;
-    public static final int kGUN_RIGHT = 14;
+    public static final int kGUN_LEFT = 8;
+    public static final int kGUN_RIGHT = 9;
+    public static final int kINDEXER = 21;  // CAN ID for the BAG motor
 
     private final SparkMax m_shooterLEFT;
     private final SparkMax m_shooterRIGHT;
+    private final WPI_VictorSPX m_indexer;
+
+    private static final double kIndexerPercentOutput = 0.7;  // set speed for BAG motor
 
     public Shooter() {
         m_shooterLEFT = new SparkMax(kGUN_LEFT, MotorType.kBrushless);
@@ -28,6 +35,11 @@ public class Shooter {
         rightConfig.smartCurrentLimit(80);
         rightConfig.inverted(true);
         m_shooterRIGHT.configure(rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    
+        // INDEXER MOTOR (BAG)
+        m_indexer = new WPI_VictorSPX(kINDEXER);
+        m_indexer.setNeutralMode(NeutralMode.Coast);
+        m_indexer.set(0.0); // start stopped
     }
 
     //ON Shooter 
