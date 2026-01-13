@@ -10,8 +10,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 public class Shooter {
-    public static final int kGUN_LEFT = 8;
-    public static final int kGUN_RIGHT = 9;
+    public static final int kGUN_LEFT = 61;
+    public static final int kGUN_RIGHT = 62;
     public static final int kINDEXER = 21;  // CAN ID for the BAG motor
 
     private final SparkMax m_shooterLEFT;
@@ -47,12 +47,14 @@ public class Shooter {
     public void shootOn() {
         m_shooterLEFT.set(1.0);   // 100%
         m_shooterRIGHT.set(1.0);
+        m_indexer.set(0.7);
     }
 
     //OFF Shooter
     public void shootOff() {
         m_shooterLEFT.set(0.0);
         m_shooterRIGHT.set(0.0);
+        m_indexer.set(0.0);
     }
 
     // public void setSpeed(double speed) {
