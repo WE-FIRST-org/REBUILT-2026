@@ -8,8 +8,8 @@ public class Intake {
     private WPI_VictorSPX intakeMotor;
 
     //This runs once when you say "new Intake()"
-    public Intake(int kIntakeCanId) {
-        intakeMotor = new WPI_VictorSPX(kIntakeCanId);
+    public Intake() {
+        intakeMotor = new WPI_VictorSPX(9);
 
         // Clear old settings 
         intakeMotor.configFactoryDefault();
