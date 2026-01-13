@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 public class Shooter {
     public static final int kGUN_LEFT = 8;
     public static final int kGUN_RIGHT = 9;
-    public static final int kINDEXER = 21;  // CAN ID for the BAG motor
+    public static final int kINDEXER = 5;  // CAN ID for the BAG motor
 
     private final SparkMax m_shooterLEFT;
     private final SparkMax m_shooterRIGHT;

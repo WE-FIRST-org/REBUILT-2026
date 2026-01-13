@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 
     drivetrain = new Drivetrain();
     shooter = new Shooter();
-    intake = new Intake(20);
+    intake = new Intake();
 
     //shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
     //shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
