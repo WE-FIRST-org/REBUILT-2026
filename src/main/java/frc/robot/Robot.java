@@ -31,18 +31,22 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  boolean inversed;
+
   private PS4Controller driverController;
   private PS4Controller operatorController;
 
   private Drivetrain drivetrain;
+  private Shooter shooter;
+  private Intake intake;  // Intake object
 
   // Shooter 
-  private SparkFlex shooterMotorLeft;
-  private SparkFlex shooterMotorRight;
+  //private SparkFlex shooterMotorLeft;
+  //private SparkFlex shooterMotorRight;
 
   // Intake + Indexer 
-  private WPI_VictorSPX intakeMotor;
-  private WPI_VictorSPX indexerMotor;
+  //private WPI_VictorSPX intakeMotor;
+  //private WPI_VictorSPX indexerMotor;
 
   private double throttle, steer;
   private double speedModifer = 1;
@@ -55,10 +59,10 @@ public class Robot extends TimedRobot {
 
   // Motor outputs
   private static final double kIntakePercentOutput = 0.7;
-  private static final double kIndexerPercentOutput = 0.7;
+  //private static final double kIndexerPercentOutput = 0.7;
 
   // Shooter stick shaping
-  private static final double kShooterDeadband = 0.05;
+  //private static final double kShooterDeadband = 0.05;
 
   /** This function is run when the robot is first started up and should be used for any initialization code. */
   public Robot() {
@@ -67,22 +71,24 @@ public class Robot extends TimedRobot {
     operatorController = new PS4Controller(1);
 
     drivetrain = new Drivetrain();
+    shooter = new Shooter();
+    intake = new Intake();
 
-    shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
-    shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
+    //shooterMotorLeft = new SparkFlex(kShooterLeftCanId, MotorType.kBrushless);
+    //shooterMotorRight = new SparkFlex(kShooterRightCanId, MotorType.kBrushless);
 
     SparkFlexConfig rightCfg = new SparkFlexConfig();
-    rightCfg.follow(shooterMotorLeft, true); // set false to not invert follower if needed
-    shooterMotorRight.configure(rightCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    //rightCfg.follow(shooterMotorLeft, true); // set false to not invert follower if needed
+    //shooterMotorRight.configure(rightCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    intakeMotor = new WPI_VictorSPX(kIntakeCanId);
-    indexerMotor = new WPI_VictorSPX(kIndexerCanId);
+    //intakeMotor = new WPI_VictorSPX(kIntakeCanId);
+    //indexerMotor = new WPI_VictorSPX(kIndexerCanId);
 
-    intakeMotor.setNeutralMode(NeutralMode.Coast);
-    indexerMotor.setNeutralMode(NeutralMode.Coast);
+    //intakeMotor.setNeutralMode(NeutralMode.Coast);
+    //indexerMotor.setNeutralMode(NeutralMode.Coast);
 
-    intakeMotor.set( 0.0);
-    indexerMotor.set( 0.0);
+    //intakeMotor.set( 0.0);
+    //indexerMotor.set( 0.0);
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -128,20 +134,33 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     drivetrain.setMode(NeutralMode.Brake);
+    inversed = false;
   }
 
   @Override
   public void teleopPeriodic() {
-    // ---- Driver drive control ----
+    //---- DRIVER DRIVE CONTROL ----
     double curLeftYVal = driverController.getLeftY();
     double curRightXVal = driverController.getRightX();
     throttle = speedModifer * joystickDeadband(-(curLeftYVal) * Math.abs(curLeftYVal));
     steer = speedModifer * joystickDeadband(curRightXVal * Math.abs(curRightXVal));
+
+    // throttle = 0.4 * joystickDeadband(-(driverController.getLeftY())*Math.abs(driverController.getLeftY()));
+    // steer = 0.20 * joystickDeadband(driverController.getRightX() * Math.abs(driverController.getRightX()));
+    // if(inversed){
+    //   throttle *= -1;
+    //   steer *= -1;
+    // }
+    // if (driverController.getLeftBumperButtonPressed()){
+    //   inversed = !inversed;
+    // }
+
+
     drivetrain.drive(throttle, steer);
 
 
-    double rightY = operatorController.getRightY();
-    double shooterCmd = -rightY;
+    //double rightY = operatorController.getRightY();
+    //double shooterCmd = -rightY;
 
     shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
     //shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
@@ -181,8 +200,20 @@ public class Robot extends TimedRobot {
     if (operatorController.getR1Button()) {
       indexerMotor.set( kIndexerPercentOutput);
     } else {
-      indexerMotor.set( 0.0);
+      intake.stop();
     }
+    // if (operatorController.getL1Button()) { 
+    //   intakeMotor.set( kIntakePercentOutput);
+    // } else {
+    //   intakeMotor.set( 0.0);
+    // }
+
+    // // Operator Controller: indexer while RB held 
+    // if (operatorController.getR1Button()) {
+    //   indexerMotor.set( kIndexerPercentOutput);
+    // } else {
+    //   indexerMotor.set( 0.0);
+    // }
   }
 
   @Override
@@ -190,9 +221,8 @@ public class Robot extends TimedRobot {
     drivetrain.setMode(NeutralMode.Coast);
 
     // Safety: stop motors when disabled
-    shooterMotorLeft.set(0.0);
-    intakeMotor.set(0.0);
-    indexerMotor.set( 0.0);
+    shooter.shootOff();
+    intake.stop();
   }
 
   @Override
