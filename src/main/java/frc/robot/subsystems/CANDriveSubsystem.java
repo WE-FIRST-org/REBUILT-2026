@@ -72,4 +72,11 @@ public class CANDriveSubsystem extends SubsystemBase {
     m_drive.arcadeDrive(xSpeed, zRotation);
   }
 
+  /**
+   * 
+   */
+  public void stop() {
+    m_drive.stopMotor();
+  }
+
 }

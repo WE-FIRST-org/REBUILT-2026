@@ -4,22 +4,17 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OperatorConstants.*;
-import frc.robot.commands.Drive;
-import frc.robot.commands.Eject;
-// import frc.robot.commands.ExampleAuto;
-import frc.robot.commands.Intake;
-import frc.robot.commands.InvertDrive;
-import frc.robot.commands.Launch;
-// import frc.robot.commands.LaunchSequence;
-import frc.robot.commands.SpinUp;
-import frc.robot.subsystems.CANDriveSubsystem;
-import frc.robot.subsystems.CANFuelSubsystem;
+
+import frc.robot.commands.*;
+import frc.robot.subsystems.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -29,9 +24,6 @@ import frc.robot.subsystems.CANFuelSubsystem;
  * commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
-  private final CANDriveSubsystem m_driveSubsystem = new CANDriveSubsystem();
-  private final CANFuelSubsystem m_fuelSubsystem = new CANFuelSubsystem();
 
   // The driver's controller
   private final CommandPS4Controller m_driverController = new CommandPS4Controller(
@@ -43,6 +35,11 @@ public class RobotContainer {
 
   // The autonomous chooser
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+  // The robot's subsystems
+  public final CANDriveSubsystem m_driveSubsystem = new CANDriveSubsystem();
+  public final CANFuelSubsystem m_fuelSubsystem = new CANFuelSubsystem();
+  public final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -68,15 +65,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    
+    //A = cross , B = circle, X = square, Y = triangle
     m_driverController.L1().onTrue(new InvertDrive());
 
     // m_operatorController.rightBumper().whileTrue(new LaunchSequence(m_fuelSubsystem));
 
     m_operatorController.rightBumper().whileTrue(new Launch(m_fuelSubsystem));
-    m_operatorController.rightTrigger().whileTrue(new SpinUp(m_fuelSubsystem));//note that the spinup speed is a fixed value, not tied to trigger
+    m_operatorController.rightTrigger(0.1).whileTrue(new SpinUp(m_fuelSubsystem, () -> m_fuelSubsystem.getController().getRightTriggerAxis()));
     m_operatorController.x().whileTrue(new Intake(m_fuelSubsystem));
     m_operatorController.a().whileTrue(new Eject(m_fuelSubsystem));
+
+    m_driverController.cross().onTrue(new AimAndRangeCommand(m_driveSubsystem, m_visionSubsystem));
+
 
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver

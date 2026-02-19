@@ -69,4 +69,27 @@ public final class Constants {
     public static final double DRIVE_SCALING = .7;
     public static final double ROTATION_SCALING = .8;
   }
+
+  public static final class AimAndRangeConstants {
+    // PID values for turning and driving forward
+    public static final double TURN_P = 0.05;
+    public static final double TURN_I = 0;
+    public static final double TURN_D = 0;
+    public static final double DRIVE_P = 0.1;
+    public static final double DRIVE_I = 0;
+    public static final double DRIVE_D = 0;
+
+    // April tag heights of game pieces
+    public static final double HUB_TARGET_HEIGHT_METERS = 1.124;
+    public static final double TOWER_TARGET_HEIGHT_METERS = 0.5525;
+    public static final double OUTPOST_TARGET_HEIGHT_METERS = 0.5525;
+    public static final double TRENCH_TARGET_HEIGHT_METERS = 0.889;
+
+    // Camera height and pitch
+    public static final double CAMERA_HEIGHT_METERS = 0.45;
+    public static final double CAMERA_PITCH_DEGREES = 9;
+    public static final double CAMERA_PITCH_RADIANS = Math.toRadians(CAMERA_PITCH_DEGREES);
+
+    public static final double DISTANCE_GOAL_METERS = 1;
+  }
 }
