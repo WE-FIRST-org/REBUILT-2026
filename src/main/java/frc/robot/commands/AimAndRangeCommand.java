@@ -25,6 +25,7 @@ public class AimAndRangeCommand extends Command {
 
     @Override
     public void execute() {
+        
         var result = m_vision.getLatestResult();
         
         if (result.hasTargets()) {

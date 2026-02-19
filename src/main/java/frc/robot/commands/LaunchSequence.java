@@ -16,8 +16,8 @@ public class LaunchSequence extends SequentialCommandGroup {
   public LaunchSequence(CANFuelSubsystem fuelSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-        new SpinUp(fuelSubsystem).withTimeout(FuelConstants.SPIN_UP_TIMEOUT),
-        new Launch(fuelSubsystem));
+    // addCommands(
+    //     new SpinUp(fuelSubsystem).withTimeout(FuelConstants.SPIN_UP_TIMEOUT),
+    //     new Launch(fuelSubsystem));
   }
 }
