@@ -51,11 +51,11 @@ public class Robot extends TimedRobot {
   private double throttle, steer;
   private double speedModifer = 1;
 
-  //private static final int kShooterLeftCanId = 13;
-  //private static final int kShooterRightCanId = 14;
+  private static final int kShooterLeftCanId = 61;
+  private static final int kShooterRightCanId = 62;
   // Set these to actual CAN IDs
-  //private static final int kIntakeCanId = 9;   // CHANGE ME
-  //private static final int kIndexerCanId = 21;  // CHANGE ME
+  private static final int kIntakeCanId = 9;   // CHANGE ME
+  private static final int kIndexerCanId = 5;  // CHANGE ME
 
   // Motor outputs
   private static final double kIntakePercentOutput = 0.7;
@@ -162,21 +162,43 @@ public class Robot extends TimedRobot {
     //double rightY = operatorController.getRightY();
     //double shooterCmd = -rightY;
 
-    // shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
-    // shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
+    shooterCmd = MathUtil.applyDeadband(shooterCmd, kShooterDeadband);
+    //shooterCmd = MathUtil.clamp(shooterCmd, 0.0, 1.0);
+    double highShooter = 0.7;
+    // if(operatorController.getSquareButton()){
+    //    highShooter = 0.1;
+    // }
+    // if(operatorController.getCircleButtonPressed()){
+    //  highShooter = 0.7;
+    // }
 
-    // shooterMotorLeft.set(shooterCmd);
+    shooterCmd = MathUtil.clamp(shooterCmd, 0.0, highShooter);
 
-    // SHOOTER AND INDEXER CONTROL
-    if (operatorController.getR2Button()) {   
-        shooter.shootOn();   // Spins shooter and indexer together
-    } else {
-        shooter.shootOff();  // Stops shooter and indexer
+    //hold R1 to index and use right pivot (before index) to shoot
+    shooterMotorLeft.set(shooterCmd);
+    //shooterMotorLeft.set(0.1);
+
+
+    // Operator Controller: intake while LB held (NO)
+    if (operatorController.getCircleButton()) { //Intake X button
+      intakeMotor.set( kIntakePercentOutput);
+    } else if (operatorController.getSquareButton()){ //Outtake A button
+      intakeMotor.set( -0.7);
+    }
+    else 
+    {
+      intakeMotor.set( 0.0);
     }
 
-    // OPERATOR CONTROL: intake while LB held
-    if (operatorController.getL1Button()) { 
-      intake.run(kIntakePercentOutput);
+    // if (operatorController.getSquareButton()) { 
+    //   intakeMotor.set( -0.7);
+    // } else {
+    //   intakeMotor.set( 0.0);
+    // }
+
+    // Operator Controller: indexer while RB held 
+    if (operatorController.getR1Button()) {
+      indexerMotor.set( kIndexerPercentOutput);
     } else {
       intake.stop();
     }
