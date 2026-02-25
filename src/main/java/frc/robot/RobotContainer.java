@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+// import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -26,8 +26,13 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
 
-  // The driver's controller
-  private final CommandPS4Controller m_driverController = new CommandPS4Controller(
+   // The robot's subsystems
+  public final CANDriveSubsystem m_driveSubsystem = new CANDriveSubsystem();
+  public final CANFuelSubsystem m_fuelSubsystem = new CANFuelSubsystem();
+  public final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+
+    // The driver's controller
+  private final CommandXboxController m_driverController = new CommandXboxController(
       DRIVER_CONTROLLER_PORT);
 
   // The operator's controller
@@ -37,11 +42,7 @@ public class RobotContainer {
   // The autonomous chooser
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-  // The robot's subsystems
-  public final CANDriveSubsystem m_driveSubsystem = new CANDriveSubsystem();
-  public final CANFuelSubsystem m_fuelSubsystem = new CANFuelSubsystem();
-  public final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
-
+ 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -67,12 +68,12 @@ public class RobotContainer {
    */
   private void configureBindings() {
     //A = cross , B = circle, X = square, Y = triangle
-    m_driverController.L1().onTrue(new InvertDrive());
+    m_driverController.leftBumper().onTrue(new InvertDrive());
 
     // m_operatorController.rightBumper().whileTrue(new LaunchSequence(m_fuelSubsystem));
 
     m_operatorController.rightBumper().whileTrue(new Launch(m_fuelSubsystem));
-   m_operatorController.rightTrigger(0.1)
+    m_operatorController.rightTrigger(0.1)
     .whileTrue(new RunCommand(
         () -> m_fuelSubsystem.setShooter(m_operatorController.getRightTriggerAxis()), 
         m_fuelSubsystem
@@ -80,7 +81,7 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new Intake(m_fuelSubsystem));
     m_operatorController.a().whileTrue(new Eject(m_fuelSubsystem));
 
-    m_driverController.cross().onTrue(new AimAndRangeCommand(m_driveSubsystem, m_visionSubsystem));
+    m_driverController.rightTrigger(0.1).whileTrue(new AimAndRangeCommand(m_driveSubsystem, m_visionSubsystem));
 
 
     // Set the default command for the drive subsystem to the command provided by

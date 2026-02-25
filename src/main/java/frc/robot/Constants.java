@@ -90,6 +90,6 @@ public final class Constants {
     public static final double CAMERA_PITCH_DEGREES = 9;
     public static final double CAMERA_PITCH_RADIANS = Math.toRadians(CAMERA_PITCH_DEGREES);
 
-    public static final double DISTANCE_GOAL_METERS = 1;
+    public static final double DISTANCE_GOAL_METERS = 0.5;
   }
 }

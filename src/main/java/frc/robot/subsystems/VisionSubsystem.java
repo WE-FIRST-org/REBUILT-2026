@@ -35,18 +35,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.VisionConstants.*;
 
 public class VisionSubsystem extends SubsystemBase {
-    private final PhotonCamera camera = new PhotonCamera(USB_CAMERA_NAME); // Declare the name of the camera used in the pipeline
+    private final PhotonCamera camera; // Declare the name of the camera used in the pipeline
     boolean hasTarget; // Stores whether or not a target is detected
     PhotonPipelineResult result; // Stores all the data that Photonvision returns
+    
+    public VisionSubsystem() {
+        camera = new PhotonCamera(USB_CAMERA_NAME);
+    }
+    
 
     @Override
     public void periodic() {
-        // PhotonPipelineResult result = camera.getLatestResult(); // Query the latest result from PhotonVision
-        // hasTarget = result.hasTargets(); // If the camera has detected an apriltag target, the hasTarget boolean will be true
-        // if (hasTarget) {
-        //     this.result = result;
-        // }
-        // InRange(0, 5, 0, 5); // Put to SmartDashboard whether or not the target is in range
+        PhotonPipelineResult result = camera.getLatestResult(); // Query the latest result from PhotonVision
+        hasTarget = result.hasTargets(); // If the camera has detected an apriltag target, the hasTarget boolean will be true
+        if (hasTarget) {
+            this.result = result;
+        }
+        InRange(0, 5, 0, 5); // Put to SmartDashboard whether or not the target is in range
+
+
+        // SmartDashboard.putNumber("Distance To AprilTag", getDistanceToTarget());
+        // SmartDashboard.putNumber("Forward Speed", -100);
+        // SmartDashboard.putNumber("Rotation Speed", -100);
+        SmartDashboard.putBoolean("Has Target", hasTarget);
     }
 
 
@@ -104,7 +115,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         //boolean inRange = Math.abs(distanceToTarget) <= distanceThreshold && Math.abs(angleToTarget) <= angleThreshold;
         boolean inRange = Math.abs(Math.abs(distanceToTarget) - distanceThreshold) >= distanceThresholdRange && Math.abs(Math.abs(angleToTarget) - angleThreshold) >= angleThresholdRange;
-        // SmartDashboard.putNumber("t_distance", distanceToTarget);
+        //SmartDashboard.putNumber("t_distance", distanceToTarget);
         
         // SmartDashboard.putNumber("t_angle", angleToTarget);
 

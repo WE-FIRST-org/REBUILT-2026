@@ -24,7 +24,7 @@ public class Intake extends Command {
   // appropriate values for intaking
   @Override
   public void initialize() {
-    fuelSubsystem.setIntakeMotor(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE));
+    fuelSubsystem.setIntakeMotor(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_FEEDER_VOLTAGE));
   }
 
   // Called every time the scheduler runs while the command is scheduled. This

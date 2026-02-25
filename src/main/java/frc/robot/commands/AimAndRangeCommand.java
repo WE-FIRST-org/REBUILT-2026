@@ -4,6 +4,7 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -41,7 +42,12 @@ public class AimAndRangeCommand extends Command {
                 CAMERA_PITCH_RADIANS,
                 Math.toRadians(target.getPitch())
             );
+
             double forwardSpeed = drivePID.calculate(range, DISTANCE_GOAL_METERS);
+
+            SmartDashboard.putNumber("Distance To AprilTag", range);
+            SmartDashboard.putNumber("Forward Speed", forwardSpeed);
+            SmartDashboard.putNumber("Rotation Speed", rotationSpeed);
 
             // Command the drivetrain (adjust signs based on your robot)
             m_drive.driveArcade(forwardSpeed, -rotationSpeed);

@@ -7,7 +7,7 @@ package frc.robot.commands;
 import static frc.robot.Constants.OperatorConstants.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.CANDriveSubsystem;
 
 
@@ -15,9 +15,9 @@ import frc.robot.subsystems.CANDriveSubsystem;
 public class Drive extends Command {
   //class member subsystem fields
   CANDriveSubsystem m_driveSubsystem;
-  CommandPS4Controller m_controller;
+  CommandXboxController m_controller;
 
-  public Drive(CANDriveSubsystem driveSystem, CommandPS4Controller driverController) {
+  public Drive(CANDriveSubsystem driveSystem, CommandXboxController driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSystem);
     m_driveSubsystem = driveSystem;
@@ -37,9 +37,9 @@ public class Drive extends Command {
   public void execute() {
     boolean isInverted = InvertDrive.getInvertStatus();
     if(isInverted){
-      m_driveSubsystem.driveArcade(m_controller.getLeftY() * DRIVE_SCALING, -m_controller.getLeftX() * ROTATION_SCALING);
+      m_driveSubsystem.driveArcade(-m_controller.getLeftY() * DRIVE_SCALING, m_controller.getRightX() * ROTATION_SCALING);
     }else{
-      m_driveSubsystem.driveArcade(-m_controller.getLeftY() * DRIVE_SCALING, m_controller.getLeftX() * ROTATION_SCALING);
+      m_driveSubsystem.driveArcade(m_controller.getLeftY() * DRIVE_SCALING, -m_controller.getRightX() * ROTATION_SCALING);
     }
   }
 
