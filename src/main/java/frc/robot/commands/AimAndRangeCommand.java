@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
+import static frc.robot.Constants.VisionConstants.*;
 import static frc.robot.Constants.AimAndRangeConstants.*;
 
 public class AimAndRangeCommand extends Command {
@@ -25,39 +26,64 @@ public class AimAndRangeCommand extends Command {
     }
 
     @Override
+    public void initialize() {
+        turnPID.reset();
+        drivePID.reset();
+    }
+
+    @Override
     public void execute() {
-        
-        var result = m_vision.getLatestResult();
-        
-        if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            
-            // Calculate PID outputs
-            double rotationSpeed = turnPID.calculate(target.getYaw(), 0);
+        PhotonPipelineResult result = m_vision.getLatestResult();
 
-            // Use PhotonUtils to find distance based on your camera's physical mounting
-            double range = PhotonUtils.calculateDistanceToTargetMeters(
-                CAMERA_HEIGHT_METERS,
-                HUB_TARGET_HEIGHT_METERS,
-                CAMERA_PITCH_RADIANS,
-                Math.toRadians(target.getPitch())
-            );
-
-            double forwardSpeed = drivePID.calculate(range, DISTANCE_GOAL_METERS);
-
-            SmartDashboard.putNumber("Distance To AprilTag", range);
-            SmartDashboard.putNumber("Forward Speed", forwardSpeed);
-            SmartDashboard.putNumber("Rotation Speed", rotationSpeed);
-
-            // Command the drivetrain (adjust signs based on your robot)
-            m_drive.driveArcade(forwardSpeed, -rotationSpeed);
-        } else {
-            m_drive.stop(); // Don't move if we lose the target
+        if (result == null || !result.hasTargets()) {
+            m_drive.stop();
+            SmartDashboard.putBoolean("AimAndRange/HasTarget", false);
+            return;
         }
+        
+        PhotonTrackedTarget target = result.getBestTarget();
+        if (target == null) {
+            m_drive.stop();
+            SmartDashboard.putBoolean("AimAndRange/HasTarget", false);
+            return;
+        }
+
+        SmartDashboard.putBoolean("AimAndRange/HasTarget", true);
+
+        double distance = m_vision.getDistanceToTarget(target); // meters (may be NaN)
+        double angleDeg = target.getYaw(); // degrees
+
+        // Defensive: ensure numeric distance
+        if (Double.isNaN(distance)) {
+            m_drive.stop();
+            SmartDashboard.putString("AimAndRange/Distance", "NaN");
+            return;
+        }
+
+        // PID: measurement, setpoint
+        double rotationSpeed = turnPID.calculate(angleDeg, 0.0); // turn to yaw=0
+        double forwardSpeed = drivePID.calculate(distance, DISTANCE_GOAL_METERS);
+
+        // Clamp outputs to safe [-1,1] (or your motor input range)
+        rotationSpeed = Math.max(-1.0, Math.min(1.0, rotationSpeed));
+        forwardSpeed  = Math.max(-1.0, Math.min(1.0, forwardSpeed));
+
+        SmartDashboard.putNumber("AimAndRange/DistanceMeters", distance);
+        SmartDashboard.putNumber("AimAndRange/AngleDeg", angleDeg);
+        SmartDashboard.putNumber("AimAndRange/ForwardSpeed", forwardSpeed);
+        SmartDashboard.putNumber("AimAndRange/RotationSpeed", rotationSpeed);
+
+        // Drive (adjust sign if your robot's arcade mapping differs)
+        m_drive.driveArcade(forwardSpeed, -rotationSpeed);
     }
 
     @Override
     public void end(boolean interrupted) {
         m_drive.stop();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

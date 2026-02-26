@@ -54,7 +54,21 @@ public final class Constants {
     // VISION CONSTANTS
     //make sure to change it back into 46.17 after logic implementation, access raspi's static ip address via "sudo nmcui" (Network Managemer Command line User Interface)
     //router ip address 10.TE.AM.1 (eg 10.46.17.1)
-    public static final String USB_CAMERA_NAME = "USB_Camera-10.48.14.5"; //VisionSubsystem.java MIT License text there
+    // public static final String USB_CAMERA_NAME = "USB_Camera-10.48.14.5"; //VisionSubsystem.java MIT License text there
+    public static final String USB_CAMERA_NAME = "Microsoft_LifeCam_HD-3000"; //VisionSubsystem.java MIT License text there
+
+    // April tag heights of game pieces
+    public static final double HUB_TARGET_HEIGHT_METERS = 1.124;
+    public static final double TOWER_TARGET_HEIGHT_METERS = 0.5525;
+    public static final double OUTPOST_TARGET_HEIGHT_METERS = 0.5525;
+    public static final double TRENCH_TARGET_HEIGHT_METERS = 0.889;
+
+    // Camera height and pitch
+    public static final double CAMERA_HEIGHT_METERS = 0.45;
+    public static final double CAMERA_PITCH_DEGREES = 40;
+    public static final double CAMERA_PITCH_RADIANS = Math.toRadians(CAMERA_PITCH_DEGREES);
+
+    public static final double DISTANCE_GOAL_METERS = 0.5;
     
   }
 
@@ -78,18 +92,5 @@ public final class Constants {
     public static final double DRIVE_P = 0.1;
     public static final double DRIVE_I = 0;
     public static final double DRIVE_D = 0;
-
-    // April tag heights of game pieces
-    public static final double HUB_TARGET_HEIGHT_METERS = 1.124;
-    public static final double TOWER_TARGET_HEIGHT_METERS = 0.5525;
-    public static final double OUTPOST_TARGET_HEIGHT_METERS = 0.5525;
-    public static final double TRENCH_TARGET_HEIGHT_METERS = 0.889;
-
-    // Camera height and pitch
-    public static final double CAMERA_HEIGHT_METERS = 0.45;
-    public static final double CAMERA_PITCH_DEGREES = 9;
-    public static final double CAMERA_PITCH_RADIANS = Math.toRadians(CAMERA_PITCH_DEGREES);
-
-    public static final double DISTANCE_GOAL_METERS = 0.5;
   }
 }

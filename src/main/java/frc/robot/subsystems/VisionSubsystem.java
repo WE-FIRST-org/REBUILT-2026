@@ -26,6 +26,7 @@ package frc.robot.subsystems;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -36,8 +37,8 @@ import static frc.robot.Constants.VisionConstants.*;
 
 public class VisionSubsystem extends SubsystemBase {
     PhotonCamera camera; // Declare the name of the camera used in the pipeline
-    boolean hasTarget = true; // Stores whether or not a target is detected
-    PhotonPipelineResult result; // Stores all the data that Photonvision returns
+    boolean hasTarget = false; // Stores whether or not a target is detected
+    PhotonPipelineResult result = null; // Stores all the data that Photonvision returns
     
     public VisionSubsystem() {
         camera = new PhotonCamera(USB_CAMERA_NAME);
@@ -45,27 +46,42 @@ public class VisionSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
-        PhotonPipelineResult result = camera.getLatestResult(); // Query the latest result from PhotonVision
-        hasTarget = result.hasTargets(); // If the camera has detected an apriltag target, the hasTarget boolean will be true
-        // if (hasTarget) {
-        //     this.result = result;
-        // }
+        this.result = camera.getLatestResult(); // Query the latest result from PhotonVision
+        hasTarget = (result != null) && result.hasTargets(); // update boolean
+
+        if (hasTarget && result.getBestTarget() != null) {
+            PhotonTrackedTarget best = result.getBestTarget();
+            SmartDashboard.putNumber("Best Target ID", best.getFiducialId());
+            SmartDashboard.putNumber("t_area", best.getArea());
+            SmartDashboard.putNumber("t_pitch", best.getPitch());
+            SmartDashboard.putNumber("t_yaw", best.getYaw());
+            SmartDashboard.putNumber("t_skew", best.getSkew());
+            // If you want distance/InRange telemetry, compute and publish here
+            SmartDashboard.putNumber("t_distance_est", getDistanceToTarget(best));
+            SmartDashboard.putBoolean("InRange", InRange(0, 5, 0, 5));
+        } else {
+            SmartDashboard.putNumber("Best Target ID", -1);
+            SmartDashboard.putNumber("t_area", 0);
+            SmartDashboard.putNumber("t_pitch", 0);
+            SmartDashboard.putNumber("t_yaw", 0);
+            SmartDashboard.putNumber("t_skew", 0);
+            SmartDashboard.putNumber("t_distance_est", 0);
+            SmartDashboard.putBoolean("InRange", false);
+        }
+
         InRange(0, 5, 0, 5); // Put to SmartDashboard whether or not the target is in range
-
-
-        // SmartDashboard.putNumber("Distance To AprilTag", getDistanceToTarget());
-        // SmartDashboard.putNumber("Forward Speed", -100);
-        // SmartDashboard.putNumber("Rotation Speed", -100);
-        // SmartDashboard.putBoolean("Has Target", hasTarget);
-        // SmartDashboard.putNumber("Best Target", result.getBestTarget().getFiducialId());
     }
 
 
     public PhotonPipelineResult getLatestResult() {
-        return camera.getLatestResult();
+        return this.result;
     }
 
     public PhotonTrackedTarget getTargetWithID(int id) { // Returns the apriltag target with the specified ID (if it exists)
+        if (result == null) {
+            return null;
+        }
+
         List<PhotonTrackedTarget> targets = result.getTargets(); // Create a list of all currently tracked targets
         for (PhotonTrackedTarget i : targets) {
             if (i.getFiducialId() == id) { // Check the ID of each target in the list
@@ -76,31 +92,32 @@ public class VisionSubsystem extends SubsystemBase {
     }
     
     public PhotonTrackedTarget getBestTarget() {
-        if (hasTarget) {
-        return result.getBestTarget(); // Returns the best (closest) target
+        if (hasTarget && result != null) {
+            return result.getBestTarget(); // Returns the best (closest) target
         }
         else {
             return null; // Otherwise, returns null if no targets are currently found
         }
     }
+
     public boolean getHasTarget() {
         return hasTarget; // Returns whether or not a target was found
     }
 
     public double getDistanceToTarget(PhotonTrackedTarget target) {
-        if (!hasTarget) {
-            return 0;
+        if (!hasTarget || target == null) {
+            return Double.NaN;
         }
-        double april_tag_pitch = target.getPitch();
-        double april_tag_area = target.getArea();
 
-        double distance = april_tag_area;
-
-        // Print the area and pitch of the target
-        //System.out.println("Area: " + april_tag_height + "Pitch: " + april_tag_pitch);
-        SmartDashboard.putNumber("t_area", april_tag_area);
-        SmartDashboard.putNumber("t_pitch", april_tag_pitch);
-        return distance;
+        double distance = PhotonUtils.calculateDistanceToTargetMeters(
+                CAMERA_HEIGHT_METERS,
+                HUB_TARGET_HEIGHT_METERS,
+                CAMERA_PITCH_RADIANS,
+                Math.toRadians(target.getPitch())
+            );
+            SmartDashboard.putNumber("t_area", target.getArea());
+            SmartDashboard.putNumber("t_pitch", target.getPitch());
+            return distance;
     }
 
     public boolean InRange(double distanceThreshold, double distanceThresholdRange,
@@ -110,21 +127,18 @@ public class VisionSubsystem extends SubsystemBase {
         }
     
         PhotonTrackedTarget bestTarget = getBestTarget();
+        if (bestTarget == null) {
+            return false;
+        }
+
         double distanceToTarget  = getDistanceToTarget(bestTarget);
         double angleToTarget = bestTarget.getYaw(); // Assuming yaw gives the angle
-        double skewTarget = bestTarget.getSkew();
 
-        //boolean inRange = Math.abs(distanceToTarget) <= distanceThreshold && Math.abs(angleToTarget) <= angleThreshold;
-        boolean inRange = Math.abs(Math.abs(distanceToTarget) - distanceThreshold) >= distanceThresholdRange && Math.abs(Math.abs(angleToTarget) - angleThreshold) >= angleThresholdRange;
-        //SmartDashboard.putNumber("t_distance", distanceToTarget);
-        
-        // SmartDashboard.putNumber("t_angle", angleToTarget);
+        // Check that the target is within the +/- range around the thresholds
+        boolean distanceOk = Math.abs(distanceToTarget - distanceThreshold) <= distanceThresholdRange;
+        boolean angleOk = Math.abs(angleToTarget - angleThreshold) <= angleThresholdRange;
 
-        // SmartDashboard.putNumber("t_skew", skewTarget);
-
-        // SmartDashboard.putBoolean("InRange", inRange);
-    
-        return inRange;
+        return distanceOk && angleOk;
     }
 }
 

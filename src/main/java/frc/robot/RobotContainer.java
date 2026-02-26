@@ -4,13 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
+// import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 // import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+// import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OperatorConstants.*;
 
@@ -67,11 +67,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    //A = cross , B = circle, X = square, Y = triangle
     m_driverController.leftBumper().onTrue(new InvertDrive());
+    m_driverController.rightTrigger(0.1).whileTrue(new AimAndRangeCommand(m_driveSubsystem, m_visionSubsystem));
 
     // m_operatorController.rightBumper().whileTrue(new LaunchSequence(m_fuelSubsystem));
-
     m_operatorController.rightBumper().whileTrue(new Launch(m_fuelSubsystem));
     m_operatorController.rightTrigger(0.1)
     .whileTrue(new RunCommand(
@@ -81,9 +80,6 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new Intake(m_fuelSubsystem));
     m_operatorController.a().whileTrue(new Eject(m_fuelSubsystem));
 
-    m_driverController.rightTrigger(0.1).whileTrue(new AimAndRangeCommand(m_driveSubsystem, m_visionSubsystem));
-
-
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver
     // controller. The Y axis of the controller is inverted so that pushing the
@@ -91,7 +87,6 @@ public class RobotContainer {
     // value)
     m_driveSubsystem.setDefaultCommand(new Drive(m_driveSubsystem, m_driverController));
     m_fuelSubsystem.setDefaultCommand(m_fuelSubsystem.run(() -> m_fuelSubsystem.stop()));
-    m_visionSubsystem.setDefaultCommand(new DisplayTarget(m_visionSubsystem));
   }
 
   /**
