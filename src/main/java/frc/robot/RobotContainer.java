@@ -90,8 +90,8 @@ public class RobotContainer {
     // stick away from you (a negative value) drives the robot forwards (a positive
     // value)
     m_driveSubsystem.setDefaultCommand(new Drive(m_driveSubsystem, m_driverController));
-
     m_fuelSubsystem.setDefaultCommand(m_fuelSubsystem.run(() -> m_fuelSubsystem.stop()));
+    m_visionSubsystem.setDefaultCommand(new DisplayTarget(m_visionSubsystem));
   }
 
   /**
