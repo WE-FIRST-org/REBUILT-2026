@@ -115,9 +115,9 @@ public class VisionSubsystem extends SubsystemBase {
                 CAMERA_PITCH_RADIANS,
                 Math.toRadians(target.getPitch())
             );
-            SmartDashboard.putNumber("t_area", target.getArea());
-            SmartDashboard.putNumber("t_pitch", target.getPitch());
-            return distance;
+        SmartDashboard.putNumber("t_area", target.getArea());
+        SmartDashboard.putNumber("t_pitch", target.getPitch());
+        return distance;
     }
 
     public boolean InRange(double distanceThreshold, double distanceThresholdRange,

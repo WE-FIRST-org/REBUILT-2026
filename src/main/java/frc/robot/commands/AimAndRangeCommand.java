@@ -11,6 +11,7 @@ import frc.robot.subsystems.VisionSubsystem;
 
 import static frc.robot.Constants.VisionConstants.*;
 import static frc.robot.Constants.AimAndRangeConstants.*;
+import static frc.robot.Constants.OperatorConstants.*;
 
 public class AimAndRangeCommand extends Command {
     private final CANDriveSubsystem m_drive;
@@ -73,8 +74,7 @@ public class AimAndRangeCommand extends Command {
         SmartDashboard.putNumber("AimAndRange/ForwardSpeed", forwardSpeed);
         SmartDashboard.putNumber("AimAndRange/RotationSpeed", rotationSpeed);
 
-        // Drive (adjust sign if your robot's arcade mapping differs)
-        m_drive.driveArcade(forwardSpeed, -rotationSpeed);
+        m_drive.driveArcade(forwardSpeed, rotationSpeed);
     }
 
     @Override

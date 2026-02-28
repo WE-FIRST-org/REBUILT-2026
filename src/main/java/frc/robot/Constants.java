@@ -65,10 +65,10 @@ public final class Constants {
 
     // Camera height and pitch
     public static final double CAMERA_HEIGHT_METERS = 0.45;
-    public static final double CAMERA_PITCH_DEGREES = 40;
+    public static final double CAMERA_PITCH_DEGREES = 62;
     public static final double CAMERA_PITCH_RADIANS = Math.toRadians(CAMERA_PITCH_DEGREES);
 
-    public static final double DISTANCE_GOAL_METERS = 0.5;
+    public static final double DISTANCE_GOAL_METERS = 0.1;
     
   }
 
@@ -80,16 +80,17 @@ public final class Constants {
 
     // This value is multiplied by the joystick value when rotating the robot to
     // help avoid turning too fast and beign difficult to control
-    public static final double DRIVE_SCALING = .7;
-    public static final double ROTATION_SCALING = .8;
+    public static final double DRIVE_SCALING = .5;
+    public static final double ROTATION_SCALING = .5;
   }
 
   public static final class AimAndRangeConstants {
     // PID values for turning and driving forward
-    public static final double TURN_P = 0.05;
+    public static final double TURN_P = 0.01;
     public static final double TURN_I = 0;
     public static final double TURN_D = 0;
-    public static final double DRIVE_P = 0.1;
+
+    public static final double DRIVE_P = 0.3; // was 0.1
     public static final double DRIVE_I = 0;
     public static final double DRIVE_D = 0;
   }

@@ -72,11 +72,11 @@ public class RobotContainer {
 
     // m_operatorController.rightBumper().whileTrue(new LaunchSequence(m_fuelSubsystem));
     m_operatorController.rightBumper().whileTrue(new Launch(m_fuelSubsystem));
-    m_operatorController.rightTrigger(0.1)
-    .whileTrue(new RunCommand(
-        () -> m_fuelSubsystem.setShooter(m_operatorController.getRightTriggerAxis()), 
-        m_fuelSubsystem
-    ));
+    // m_operatorController.rightTrigger(0.1)
+    // .whileTrue(new RunCommand(
+    //     () -> m_fuelSubsystem.setShooter(m_operatorController.getRightTriggerAxis()), 
+    //     m_fuelSubsystem
+    // ));
     m_operatorController.x().whileTrue(new Intake(m_fuelSubsystem));
     m_operatorController.a().whileTrue(new Eject(m_fuelSubsystem));
 

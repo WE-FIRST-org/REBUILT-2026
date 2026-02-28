@@ -21,13 +21,13 @@ public class CANFuelSubsystem extends SubsystemBase {
   //class member Fields needed for the subsystem
   private final WPI_VictorSPX m_Intake_Motor;
   private final WPI_VictorSPX m_Indexer_Motor;
-  private final SparkMax m_Left_Shooter_Motor;
-  private final SparkMax m_Right_Shooter_Motor;
+  // private final SparkMax m_Left_Shooter_Motor;
+  // private final SparkMax m_Right_Shooter_Motor;
 
   public CANFuelSubsystem() {
     // create brushed motors for each of the motors on the launcher mechanism
-    m_Left_Shooter_Motor = new SparkMax(k_SHOOTER_LEFT_MOTOR_ID,MotorType.kBrushless);
-    m_Right_Shooter_Motor = new SparkMax(k_SHOOTER_RIGHT_MOTOR_ID, MotorType.kBrushless);
+    // m_Left_Shooter_Motor = new SparkMax(k_SHOOTER_LEFT_MOTOR_ID,MotorType.kBrushless);
+    // m_Right_Shooter_Motor = new SparkMax(k_SHOOTER_RIGHT_MOTOR_ID, MotorType.kBrushless);
     
     m_Indexer_Motor = new WPI_VictorSPX(k_INDEXER_MOTOR_ID);
     
@@ -36,11 +36,11 @@ public class CANFuelSubsystem extends SubsystemBase {
     //Configurating the Shooters
     SparkMaxConfig ShooterConfig = new SparkMaxConfig();
     ShooterConfig.smartCurrentLimit(SHOOTER_MOTOR_CURRENT_LIMIT);
-    m_Left_Shooter_Motor.configure(ShooterConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    ShooterConfig.follow(m_Left_Shooter_Motor,true);
-    m_Right_Shooter_Motor.configure(ShooterConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    m_Left_Shooter_Motor.set(0);
-    m_Right_Shooter_Motor.set(0);
+    // m_Left_Shooter_Motor.configure(ShooterConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    // ShooterConfig.follow(m_Left_Shooter_Motor,true);
+    // m_Right_Shooter_Motor.configure(ShooterConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    // m_Left_Shooter_Motor.set(0);
+    // m_Right_Shooter_Motor.set(0);
 
     m_Indexer_Motor.setNeutralMode(NeutralMode.Coast);
     m_Indexer_Motor.set(0);
@@ -61,7 +61,7 @@ public class CANFuelSubsystem extends SubsystemBase {
 
   // A method to set the voltage of the intake roller
   public void setShooter(double voltage) {
-    m_Left_Shooter_Motor.setVoltage(voltage);
+    // m_Left_Shooter_Motor.setVoltage(voltage);
   }
 
   public void setIndexer(double voltage){
@@ -79,6 +79,6 @@ public class CANFuelSubsystem extends SubsystemBase {
   public void stop() {
     m_Intake_Motor.set(0);
     m_Indexer_Motor.set(0);
-    m_Left_Shooter_Motor.set(0);
+    // m_Left_Shooter_Motor.set(0);
   }
 }
