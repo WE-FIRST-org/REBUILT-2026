@@ -93,5 +93,9 @@ public final class Constants {
     public static final double DRIVE_P = 0.3; // was 0.1
     public static final double DRIVE_I = 0;
     public static final double DRIVE_D = 0;
+
+    public static final double DRIVE_kS = 0.3; // was 0.1
+    public static final double DRIVE_kV = 0;
+    public static final double DRIVE_kA = 0;
   }
 }

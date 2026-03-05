@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
 import static frc.robot.Constants.OperatorConstants.*;
 
 import frc.robot.commands.*;
@@ -87,6 +89,19 @@ public class RobotContainer {
     // value)
     m_driveSubsystem.setDefaultCommand(new Drive(m_driveSubsystem, m_driverController));
     m_fuelSubsystem.setDefaultCommand(m_fuelSubsystem.run(() -> m_fuelSubsystem.stop()));
+
+
+
+    // finding feedforward constant
+    m_driverController.y().whileTrue(m_driveSubsystem.sysIdQuasistaticLinear(Direction.kForward));
+    m_driverController.a().whileTrue(m_driveSubsystem.sysIdQuasistaticLinear(Direction.kReverse));
+    m_driverController.b().whileTrue(m_driveSubsystem.sysIdDynamicLinear(Direction.kForward));
+    m_driverController.x().whileTrue(m_driveSubsystem.sysIdDynamicLinear(Direction.kReverse));
+
+    m_driverController.povUp().whileTrue(m_driveSubsystem.sysIdQuasistaticAngular(Direction.kForward));
+    m_driverController.povDown().whileTrue(m_driveSubsystem.sysIdQuasistaticAngular(Direction.kReverse));
+    m_driverController.povRight().whileTrue(m_driveSubsystem.sysIdDynamicAngular(Direction.kForward));
+    m_driverController.povLeft().whileTrue(m_driveSubsystem.sysIdDynamicAngular(Direction.kReverse));
   }
 
   /**

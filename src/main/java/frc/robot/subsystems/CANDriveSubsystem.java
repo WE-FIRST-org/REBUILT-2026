@@ -6,13 +6,18 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.DriveConstants.*;
 
 public class CANDriveSubsystem extends SubsystemBase {
-  private final WPI_VictorSPX m_leftLeader,m_leftFollower,m_rightLeader,m_rightFollower;
+  private WPI_VictorSPX m_leftLeader, m_leftFollower, m_rightLeader, m_rightFollower;
 
-  private final DifferentialDrive m_drive;
+  private DifferentialDrive m_drive;
 
   public CANDriveSubsystem() {
     //class member motor controller field
@@ -32,7 +37,7 @@ public class CANDriveSubsystem extends SubsystemBase {
 
     m_leftLeader.setInverted(false);
     m_leftFollower.setInverted(false);
-    m_leftFollower.follow(m_leftFollower);
+    m_leftFollower.follow(m_leftLeader);
 
     /*
      * //This is meant for SparkMax only
@@ -56,6 +61,50 @@ public class CANDriveSubsystem extends SubsystemBase {
      * leftLeader.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
      */
     
+  }
+
+  private final SysIdRoutine m_linearRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(
+        (voltage) -> {
+          m_leftLeader.setVoltage(voltage.in(Volts)); // Applied voltage
+          m_rightLeader.setVoltage(voltage.in(Volts)); // Applied voltage
+          SmartDashboard.putNumber("linear routine", voltage.in(Volts));
+          m_drive.feed();
+        },
+        null, // Optional: add custom logging here
+        this
+      )
+  );
+
+  private final SysIdRoutine m_angularRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(
+        (voltage) -> {
+          m_leftLeader.setVoltage(voltage.in(Volts)); // Applied voltage
+          m_rightLeader.setVoltage(voltage.unaryMinus().in(Volts)); // Applied voltage
+          SmartDashboard.putNumber("angular routine", voltage.in(Volts));
+          m_drive.feed();
+        },
+        null, // Optional: add custom logging here
+        this
+      )
+  );
+
+  public Command sysIdQuasistaticLinear(SysIdRoutine.Direction direction) {
+      return m_linearRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicLinear(SysIdRoutine.Direction direction) {
+      return m_linearRoutine.dynamic(direction);
+  }
+
+  public Command sysIdQuasistaticAngular(SysIdRoutine.Direction direction) {
+      return m_angularRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicAngular(SysIdRoutine.Direction direction) {
+      return m_angularRoutine.dynamic(direction);
   }
 
   @Override
