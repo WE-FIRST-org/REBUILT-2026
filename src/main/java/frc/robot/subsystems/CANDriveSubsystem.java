@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,7 +74,9 @@ public class CANDriveSubsystem extends SubsystemBase {
           SmartDashboard.putNumber("linear routine", voltage.in(Volts));
           m_drive.feed();
         },
-        null, // Optional: add custom logging here
+        (log) -> {
+
+        }, // Optional: add custom logging here
         this
       )
   );
@@ -84,6 +88,7 @@ public class CANDriveSubsystem extends SubsystemBase {
           m_leftLeader.setVoltage(voltage.in(Volts)); // Applied voltage
           m_rightLeader.setVoltage(voltage.unaryMinus().in(Volts)); // Applied voltage
           SmartDashboard.putNumber("angular routine", voltage.in(Volts));
+          SignalLogger.start();
           m_drive.feed();
         },
         null, // Optional: add custom logging here
