@@ -11,7 +11,6 @@ import frc.robot.subsystems.VisionSubsystem;
 
 import static frc.robot.Constants.VisionConstants.*;
 import static frc.robot.Constants.AimAndRangeConstants.*;
-import static frc.robot.Constants.OperatorConstants.*;
 
 public class AimAndRangeCommand extends Command {
     private final CANDriveSubsystem m_drive;

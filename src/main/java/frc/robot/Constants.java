@@ -69,6 +69,8 @@ public final class Constants {
     public static final double CAMERA_PITCH_RADIANS = Math.toRadians(CAMERA_PITCH_DEGREES);
 
     public static final double DISTANCE_GOAL_METERS = 0.1;
+
+    public static final int k_PIGEON_ID = 12;
     
   }
 
