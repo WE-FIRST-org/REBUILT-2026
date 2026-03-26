@@ -37,7 +37,7 @@ public class Drive extends Command {
   public void execute() {
     boolean isInverted = InvertDrive.getInvertStatus();
     if(isInverted){
-      m_driveSubsystem.driveArcade(-m_controller.getLeftY() * DRIVE_SCALING, m_controller.getRightX() * ROTATION_SCALING);
+      m_driveSubsystem.driveArcade(-m_controller.getLeftY() * DRIVE_SCALING, -m_controller.getRightX() * ROTATION_SCALING);
     }else{
       m_driveSubsystem.driveArcade(m_controller.getLeftY() * DRIVE_SCALING, -m_controller.getRightX() * ROTATION_SCALING);
     }

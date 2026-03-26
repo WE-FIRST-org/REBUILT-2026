@@ -15,7 +15,8 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import com.studica.frc.Navx;
 
 public class IMUSubsystem extends SubsystemBase {
-    private Navx navx;
+    // Create NavX Object
+    private Navx navx= new Navx(12, 100); // CAN
     // private SimDeviceSim device;
 
     // Required to get different readings
@@ -27,8 +28,6 @@ public class IMUSubsystem extends SubsystemBase {
     // private int error = navx.getCompass(mag);
     
     public IMUSubsystem() {
-        // Create NavX Object
-        navx = new Navx(0, 100); // CAN
         // navx = new Navx(Navx.Port.kUSB1); // USB 
     
         // Create Sim Object
@@ -59,6 +58,13 @@ public class IMUSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
+        // Required to get different readings
+        quat = navx.getQuat6D();
+        omega = navx.getAngularVel();
+        quat9 = navx.getQuat9D();
+        accel = navx.getLinearAccel();
+        navx.getCompass(mag);
+
         // Yaw, Pitch, Roll, Angle
         SmartDashboard.putNumber("Yaw:",  navx.getYaw().in(Degrees));
         SmartDashboard.putNumber("Pitch:", navx.getPitch().in(Degrees));
